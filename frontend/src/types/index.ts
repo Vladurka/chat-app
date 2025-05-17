@@ -1,3 +1,4 @@
+import { create } from "zustand";
 export interface User {
   _id: string;
   email: string;
@@ -20,6 +21,13 @@ export interface UserLogIn {
 export interface Message {
   _id: string;
   senderId: string;
+  receiverId: string;
+  text: string;
+  image: string;
+  createdAt: string;
+}
+
+export interface MessageData {
   receiverId: string;
   text: string;
   image: string;
