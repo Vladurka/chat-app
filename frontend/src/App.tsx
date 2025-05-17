@@ -8,9 +8,11 @@ import { LogInPage } from "./pages/LogInPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { SignUpPage } from "./pages/SignUpPage";
 import { ProfilePage } from "./pages/ProfilePage";
+import { useThemeStore } from "./store/useThemeStore";
 
 export const App = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  const { theme } = useThemeStore();
 
   useEffect(() => {
     checkAuth();
@@ -25,7 +27,7 @@ export const App = () => {
   }
 
   return (
-    <>
+    <div data-theme={theme}>
       <Navbar />
       <Routes>
         <Route
@@ -46,6 +48,6 @@ export const App = () => {
         />
         <Route path="/settings" element={<SettingsPage />} />
       </Routes>
-    </>
+    </div>
   );
 };
