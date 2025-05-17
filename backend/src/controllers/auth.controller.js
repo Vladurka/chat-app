@@ -28,7 +28,7 @@ export const signup = async (req, res, next) => {
     if (newUser) {
       generateToken(newUser._id, res);
       await newUser.save();
-      res.status(201).json({ user: newUser });
+      res.status(201).json(newUser);
     } else {
       res.status(400).send("Invalid user data");
     }
@@ -44,7 +44,7 @@ export const login = async (req, res, next) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).send("Invalid credentials");
     generateToken(user._id, res);
-    res.status(200).json({ user });
+    res.status(200).json(user);
   } catch (error) {
     next(error);
   }
@@ -59,20 +59,25 @@ export const logout = (req, res, next) => {
 };
 
 export const updateProfile = async (req, res, next) => {
-  const { profilePic } = req.body;
   try {
     const userId = req.user._id;
+    const { profilePic } = req.body;
 
     if (!profilePic) {
-      return res.status(400).send("Profile picture is required");
+      return res.status(400).json({ message: "Profile picture is required" });
     }
 
     const uploadResponse = await cloudinary.uploader.upload(profilePic);
-    const updatedUser = await User.findAndUpdate(
+
+    const updatedUser = await User.findByIdAndUpdate(
       userId,
       { profilePic: uploadResponse.secure_url },
       { new: true }
     );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
     res.status(200).json(updatedUser);
   } catch (error) {
@@ -82,7 +87,7 @@ export const updateProfile = async (req, res, next) => {
 
 export const checkAuth = (req, res, next) => {
   try {
-    res.status(200).json({ user: req.user });
+    res.status(200).json(req.user);
   } catch (error) {
     next(error);
   }

@@ -3,6 +3,18 @@ export interface User {
   email: string;
   fullname: string;
   profilePic: string;
+  createdAt: string;
+}
+
+export interface UserSignUp {
+  email: string;
+  fullname: string;
+  password: string;
+}
+
+export interface UserLogIn {
+  email: string;
+  password: string;
 }
 
 export interface Message {
