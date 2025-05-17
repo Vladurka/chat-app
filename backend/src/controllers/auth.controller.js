@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { generateToken } from "../lib/utils.js";
 import cloudinary from "../lib/cloudinary.js";
 
-export const signup = async (req, res) => {
+export const signup = async (req, res, next) => {
   const { email, fullname, password } = req.body;
   try {
     if (password.length < 6) {
@@ -33,11 +33,10 @@ export const signup = async (req, res) => {
       res.status(400).send("Invalid user data");
     }
   } catch (err) {
-    console.log("Error creating user:", err);
-    res.status(500).send("Internal Server Error");
+    next(error);
   }
 };
-export const login = async (req, res) => {
+export const login = async (req, res, next) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
@@ -47,21 +46,19 @@ export const login = async (req, res) => {
     generateToken(user._id, res);
     res.status(200).json({ user });
   } catch (error) {
-    console.log("Error logging in:", error);
-    res.status(500).send("Internal Server Error");
+    next(error);
   }
 };
-export const logout = (req, res) => {
+export const logout = (req, res, next) => {
   try {
     res.cookie("jwt", "", { maxAge: 0 });
     res.status(200).json({ message: "Logout successful" });
   } catch (error) {
-    console.log("Error logging out:", error);
-    res.status(500).send("Internal Server Error");
+    next(error);
   }
 };
 
-export const updateProfile = async (req, res) => {
+export const updateProfile = async (req, res, next) => {
   const { profilePic } = req.body;
   try {
     const userId = req.user._id;
@@ -79,16 +76,14 @@ export const updateProfile = async (req, res) => {
 
     res.status(200).json(updatedUser);
   } catch (error) {
-    console.log("Error updating profile:", error);
-    res.status(500).send("Internal Server Error");
+    next(error);
   }
 };
 
-export const checkAuth = (req, res) => {
+export const checkAuth = (req, res, next) => {
   try {
     res.status(200).json({ user: req.user });
   } catch (error) {
-    console.log("Error checking authentication:", error);
-    res.status(500).send("Internal Server Error");
+    next(error);
   }
 };
